@@ -61,13 +61,13 @@ sudo ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/
 > Voir plus tard pour la compatibilité avec QubesOS 
 > (certainement le même process avec tar.gz)
 
-### (Optionnal) Nerd font
+### Nerd font
 
-> [!NOTE]
-> Normalement c'est mieux avec nerd font mais vas-y j'ai jamais compris comment l'installer sans que ça bug
-> [Nerd Font](https://www.nerdfonts.com/) et après les .otf et .ttf dans `/usr/local/share/fonts/`
-> Faire un autre truc
-> l94 du init.lua `vim.g.have_nerd_font = true`
+1. [Nerd Font](https://www.nerdfonts.com/) 
+2. Choisir une lib style 'Agave nerd font'
+3. `unzip Agave.zip -d Agave`
+4. `mv Agave /usr/local/share/fonts/`
+5. Configurer la font dans les préférences du terminal
 
 ### Installer cette config
 

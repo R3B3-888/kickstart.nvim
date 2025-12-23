@@ -580,6 +580,8 @@ require('lazy').setup({
         desc = '[F]ormat buffer',
       },
     },
+    ---@module "conform"
+    ---@type conform.setupOpts
     opts = {
       notify_on_error = false,
       format_on_save = function(bufnr)
@@ -598,17 +600,15 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
-        -- Conform can also run multiple formatters sequentially
         python = {
-          -- To fix auto-fixable lint errors.
           'ruff_fix',
-          -- To run the Ruff formatter.
           'ruff_format',
-          -- To organize the imports.
           'ruff_organize_imports',
         },
         -- You can use 'stop_after_first' to run the first available formatter from the list
         javascript = { 'prettierd', 'prettier', stop_after_first = true },
+        typescript = { 'prettierd', 'prettier', stop_after_first = true },
+        typescriptreact = { 'prettierd', 'prettier', stop_after_first = true },
       },
     },
   },

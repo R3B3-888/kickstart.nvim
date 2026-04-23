@@ -493,6 +493,9 @@ require('lazy').setup({
         eslint = {},
         tailwindcss = {},
 
+        -- Shell
+        bashls = {},
+
         -- Config files
         jsonls = {},
         yamlls = {},
@@ -530,6 +533,8 @@ require('lazy').setup({
         'prettierd', -- JS/TS/CSS/HTML/JSON/YAML/MD formatter daemon
         'prettier', -- Fallback for prettierd
         'markdownlint', -- Markdown linter
+        'shfmt', -- Shell formatter
+        'js-debug-adapter', -- DAP backend for JS/TS (used by nvim-dap-vscode-js)
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -607,6 +612,8 @@ require('lazy').setup({
           yaml = prettier,
           markdown = prettier,
           toml = { 'taplo' },
+          sh = { 'shfmt' },
+          bash = { 'shfmt' },
         },
       }
     end,

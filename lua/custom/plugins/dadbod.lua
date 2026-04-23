@@ -1,5 +1,12 @@
--- Client DB (Postgres, MySQL, SQLite, Redis...) avec UI type DBeaver.
+-- Client DB (Postgres, MySQL, SQLite, MongoDB, Redis...) avec UI type DBeaver.
 -- Configurer les connexions : `:DBUIAddConnection` ou via ~/.local/share/db_ui/.
+--
+-- URLs supportées (exemples) :
+--   postgresql://user:pass@host:5432/dbname
+--   mysql://user:pass@host:3306/dbname
+--   sqlite:/path/to/file.db
+--   mongodb://user:pass@host:27017/dbname   (requiert `mongosh` dans $PATH)
+--   redis://host:6379
 return {
   { 'tpope/vim-dadbod', cmd = 'DB' },
   {

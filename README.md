@@ -53,8 +53,16 @@ Leader = `Espace`.
 
 ```bash
 sudo apt update
-sudo apt install make gcc ripgrep unzip git xclip curl fd-find
+sudo apt install make gcc ripgrep unzip git xclip curl fd-find \
+                 nodejs npm lazygit
 ```
+
+- `nodejs` + `npm` : requis par plusieurs LSPs (`bashls`, `eslint`, `tailwindcss`,
+  `ts_ls`) et par `prettier`. Node 18+ recommandé.
+- `lazygit` : si le paquet n'est pas dispo dans ton apt, installer le binaire
+  depuis [jesseduffield/lazygit][lazygit-gh] (releases GitHub).
+
+[lazygit-gh]: https://github.com/jesseduffield/lazygit#installation
 
 ### 2. Neovim (>= 0.10 recommandé)
 
@@ -106,6 +114,53 @@ nvim
 Au premier lancement, attendre ~1 minute que Mason télécharge tous les LSPs
 et formatters (voir la barre de statut en bas).
 
+## Pré-requis externes par plugin
+
+Mason gère automatiquement tous les LSPs, formatters et debug adapters cités
+dans `init.lua`. Ce qui suit est ce que **Mason ne peut PAS installer** — à
+mettre manuellement sur une nouvelle machine.
+
+### Binaires système (obligatoires)
+
+| Binaire   | Utilisé par              | Install                       |
+| --------- | ------------------------ | ----------------------------- |
+| `lazygit` | `lazygit.nvim`           | voir [lazygit-gh] si pas apt  |
+| `nodejs`  | `bashls`, `eslint`, `ts` | `apt install nodejs npm`      |
+| `rg`      | Telescope live_grep      | `apt install ripgrep`         |
+| `fd`      | Telescope find_files     | `apt install fd-find`         |
+| `claude`  | `claude-code.nvim`       | voir [claude-cli]             |
+
+### Binaires optionnels (par fonctionnalité)
+
+| Binaire   | Activé quand...            | Install                            |
+| --------- | -------------------------- | ---------------------------------- |
+| `psql`    | `<leader>du` + Postgres    | `apt install postgresql-client`    |
+| `mysql`   | `<leader>du` + MySQL       | `apt install default-mysql-client` |
+| `sqlite3` | `<leader>du` + SQLite      | `apt install sqlite3`              |
+| `mongosh` | `<leader>du` + MongoDB     | voir [mongosh-install]             |
+
+### Dépendances **par projet** (pas nvim)
+
+Les tests et le debug ont besoin que le projet lui-même ait installé ses
+propres outils. Mason n'y touche pas.
+
+| Contexte                | À installer dans le projet            |
+| ----------------------- | ------------------------------------- |
+| `<leader>tt` Python     | `pip install pytest` dans le venv     |
+| `<leader>tt` TS/React   | `bun add -d vitest` (ou npm)          |
+| ESLint LSP attaché      | `eslint.config.js` dans le projet     |
+| Tailwind autocomplétion | `tailwind.config.{js,ts}` dans projet |
+
+### Mémo : installer Mason manuellement
+
+Si jamais Mason foire l'auto-install, lancer dans nvim :
+
+```vim
+:MasonToolsInstall
+```
+
+Puis vérifier avec `:Mason` (tout doit être en vert ✓).
+
 ## Vérification
 
 Dans Neovim :
@@ -141,3 +196,4 @@ qui retourne une spec `lazy.nvim`. Pas besoin de toucher à `init.lua`.
 - `:Tutor` directement dans nvim
 
 [neovim-video]: https://youtu.be/m8C0Cq9Uv9o
+[mongosh-install]: https://www.mongodb.com/docs/mongodb-shell/install/

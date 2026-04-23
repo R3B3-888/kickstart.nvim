@@ -1,47 +1,66 @@
 # Config nvim de R3B3
 
-## Note sur mes besoins pour l'IDE parfait
+Fork personnel de [kickstart.nvim][kickstart], adapté pour :
 
-- Git staged, commit, push, pull, merge
-- Git hunk : _plugin gitsigns_
-- tests
-- python
-    - lsp pour la navigation et la doc (^K) : _pylsp_
-    - autoformat et linting : _ruff_
-    - pouvoir accèder aux sources dans .venv par exemple
-- markdown
-    - linting
-    - lsp
-    - autoformat
-    - preview 'joli' du markdown
-- terminal
-    - lancer le process principal
-    - console python
-    - ai cli
-- file explorer
-    - vue sur mes fichiers
-    - création de dossiers ou de fichiers facilement
+- **Python** (basedpyright + ruff)
+- **TypeScript / React** (.ts, .tsx) avec Bun
+- **JavaScript / React** (.js, .jsx) avec npm
+- **Fichiers de config** (JSON, JSONC, YAML, TOML)
+- **Tailwind CSS** avec autocomplétion
+- Intégration [Claude Code][claude-code-nvim] directement dans nvim
 
-**Autres besoins potentiels**
+[kickstart]: https://github.com/nvim-lua/kickstart.nvim
+[claude-code-nvim]: https://github.com/greggh/claude-code.nvim
 
-- tableurs csv etc
-- latex avec preview
+## Stack complète
+
+| Couche              | Outils                                         |
+| ------------------- | ---------------------------------------------- |
+| Plugins             | `lazy.nvim`                                    |
+| Installateur        | `mason.nvim` + `mason-tool-installer.nvim`     |
+| LSPs Python         | `basedpyright`, `ruff`                         |
+| LSPs JS/TS          | `ts_ls`, `eslint`, `tailwindcss`               |
+| LSPs config         | `jsonls`, `yamlls`, `taplo`                    |
+| LSP Lua             | `lua_ls`                                       |
+| Formatage           | `conform.nvim` (prettierd, stylua, ruff, taplo)|
+| Linting             | `nvim-lint` (markdownlint)                     |
+| Autocomplétion      | `blink.cmp` (fuzzy matcher Rust)               |
+| Treesitter          | Parsers JS/TS/TSX/JSX/Python/JSON/YAML/TOML... |
+| File explorer       | `neo-tree.nvim` (`\` pour toggle)              |
+| Fuzzy finder        | `telescope.nvim`                               |
+| Git                 | `gitsigns.nvim`                                |
+| Terminal Claude     | `claude-code.nvim`                             |
+
+## Raccourcis clés ajoutés en plus de kickstart
+
+| Touche                  | Action                                    |
+| ----------------------- | ----------------------------------------- |
+| `<leader>cc` ou `<C-,>` | Toggle terminal Claude Code               |
+| `<leader>st`            | [S]earch [T]odo via Telescope             |
+| `<leader>f`             | Formater le buffer courant                |
+| `<leader>sf`            | Chercher des fichiers (Telescope)         |
+| `<leader>sg`            | [G]rep dans le projet                     |
+| `<leader>sd`            | Lister les [D]iagnostics                  |
+| `\`                     | Toggle neo-tree                           |
+| `<C-h/j/k/l>`           | Navigation entre splits                   |
+| `<C-S-h/j/k/l>`         | Déplacer le split lui-même                |
+
+Leader = `Espace`.
 
 ## Installation
 
-### Installer Neovim
-
-1. Dépendences : 
+### 1. Dépendances système
 
 ```bash
 sudo apt update
-sudo apt install make gcc ripgrep unzip git xclip curl
+sudo apt install make gcc ripgrep unzip git xclip curl fd-find
 ```
 
-2. Neovim :
+### 2. Neovim (>= 0.10 recommandé)
 
 ```bash
-curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
+NVIM_URL=https://github.com/neovim/neovim/releases/latest/download
+curl -LO $NVIM_URL/nvim-linux-x86_64.tar.gz
 sudo rm -rf /opt/nvim-linux-x86_64
 sudo mkdir -p /opt/nvim-linux-x86_64
 sudo chmod a+rX /opt/nvim-linux-x86_64
@@ -49,42 +68,76 @@ sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz
 sudo ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/
 ```
 
-### Nerd font
+### 3. Nerd Font
 
-1. [Nerd Font](https://www.nerdfonts.com/) 
-2. Choisir une lib style 'Agave nerd font'
+1. Choisir une font sur [Nerd Fonts](https://www.nerdfonts.com/)
+   (ex : Agave, JetBrainsMono).
+1. Dézipper et l'installer :
 
-3. Déziper
+   ```bash
+   unzip Agave.zip -d Agave
+   sudo mv Agave /usr/local/share/fonts/
+   fc-cache -f -v
+   ```
+
+1. Configurer la font dans les préférences du terminal.
+
+### 4. Claude Code CLI
+
+Requis pour le plugin `claude-code.nvim`.
+Voir [anthropics/claude-code][claude-cli]. Le binaire doit être accessible
+via `$PATH` (`which claude` doit retourner un chemin).
+
+[claude-cli]: https://github.com/anthropics/claude-code
+
+### 5. Installer cette config
+
 ```bash
-unzip Agave.zip -d Agave
-```
+# Sauvegarder l'ancienne config si elle existe
+mv ~/.config/nvim ~/.config/nvim.bak 2>/dev/null
 
-4. Le mettre dans le dossier fonts
-```bash
-mv Agave /usr/local/share/fonts/
-```
-
-5. Configurer la font dans les préférences du terminal
-
-### Installer cette config
-
-1. Supprimer la vieille config
-```bash
-rm -rf ~/.config/nvim/
-```
-
-2. la vrai installation
-```bash
+# Cloner
 git clone git@github.com:R3B3-888/kickstart.nvim.git ~/.config/nvim
-```
 
-3. Lancer vim
-```bash
+# Lancer nvim — lazy.nvim installe les plugins, Mason installe les LSPs
 nvim
 ```
 
+Au premier lancement, attendre ~1 minute que Mason télécharge tous les LSPs
+et formatters (voir la barre de statut en bas).
+
+## Vérification
+
+Dans Neovim :
+
+- `:checkhealth` — diagnostic global
+- `:Mason` — état des LSPs et outils installés
+- `:Lazy` — état des plugins
+- `:LspInfo` (sur un fichier Python/TS/etc.) — confirmer les serveurs attachés
+
+## Structure du dépôt
+
+```text
+init.lua                 # Config principale (options, keymaps, lazy.setup)
+lua/custom/plugins/      # Plugins perso (auto-importés par lazy.nvim)
+  ├── init.lua           # Placeholder
+  └── claude-code.lua    # Plugin Claude Code
+lua/kickstart/           # Extras optionnels fournis par kickstart
+  ├── health.lua         # :checkhealth kickstart
+  └── plugins/debug.lua  # DAP (debugger)
+doc/kickstart.txt        # :help kickstart
+.stylua.toml             # Config formatter Lua
+lazy-lock.json           # Lock des versions de plugins (versionné)
+CLAUDE.md                # Guide pour Claude Code (IA)
+```
+
+Pour ajouter un plugin : créer un fichier `lua/custom/plugins/mon-plugin.lua`
+qui retourne une spec `lazy.nvim`. Pas besoin de toucher à `init.lua`.
+
 ## Docs pour apprendre vim
 
-- [The Only Video You Need to Get Started with Neovim](https://youtu.be/m8C0Cq9Uv9o)
-- chaînes yt ThePrimeagen et Luke Smith
+- [The Only Video You Need to Get Started with Neovim][neovim-video]
+- Chaînes YT : ThePrimeagen, Luke Smith
+- `:Tutor` directement dans nvim
 
+[neovim-video]: https://youtu.be/m8C0Cq9Uv9o

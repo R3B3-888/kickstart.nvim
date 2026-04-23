@@ -478,10 +478,8 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        -- clangd = {},
-        -- gopls = {},
-        -- pyright = {},
-        -- rust_analyzer = {},
+        -- Python: basedpyright for types/intellisense, ruff for lint/format
+        basedpyright = {},
         ruff = {
           init_options = {
             settings = {
@@ -489,36 +487,18 @@ require('lazy').setup({
             },
           },
         },
-        -- basedpyright = {},
-        pylsp = {
-          settings = {
-            pylsp = {
-              plugins = {
-                -- pyflakes = { enabled = false },
-                -- pycodestyle = { enabled = false },
-                -- autopep8 = { enabled = false },
-                -- yapf = { enabled = false },
-                -- mccabe = { enabled = false },
-                -- pylsp_black = { enabled = false },
-                -- pylsp_isort = { enabled = false },
-                -- pylsp_mypy = { enabled = false },
-              },
-            },
-          },
-        },
-        -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
-        --
-        -- Some languages (like typescript) have entire language plugins that can be useful:
-        --    https://github.com/pmizio/typescript-tools.nvim
-        --
-        -- But for many setups, the LSP (`ts_ls`) will work just fine
+
+        -- JavaScript / TypeScript / React (.js, .jsx, .ts, .tsx)
         ts_ls = {},
-        --
+        eslint = {},
+        tailwindcss = {},
+
+        -- Config files
+        jsonls = {},
+        yamlls = {},
+        taplo = {},
 
         lua_ls = {
-          -- cmd = { ... },
-          -- filetypes = { ... },
-          -- capabilities = {},
           settings = {
             Lua = {
               completion = {
@@ -546,7 +526,10 @@ require('lazy').setup({
       -- for you, so that they are available from within Neovim.
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
-        'stylua', -- Used to format Lua code
+        'stylua', -- Lua formatter
+        'prettierd', -- JS/TS/CSS/HTML/JSON/YAML/MD formatter daemon
+        'prettier', -- Fallback for prettierd
+        'markdownlint', -- Markdown linter
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -608,8 +591,16 @@ require('lazy').setup({
         },
         -- You can use 'stop_after_first' to run the first available formatter from the list
         javascript = { 'prettierd', 'prettier', stop_after_first = true },
+        javascriptreact = { 'prettierd', 'prettier', stop_after_first = true },
         typescript = { 'prettierd', 'prettier', stop_after_first = true },
         typescriptreact = { 'prettierd', 'prettier', stop_after_first = true },
+        css = { 'prettierd', 'prettier', stop_after_first = true },
+        html = { 'prettierd', 'prettier', stop_after_first = true },
+        json = { 'prettierd', 'prettier', stop_after_first = true },
+        jsonc = { 'prettierd', 'prettier', stop_after_first = true },
+        yaml = { 'prettierd', 'prettier', stop_after_first = true },
+        markdown = { 'prettierd', 'prettier', stop_after_first = true },
+        toml = { 'taplo' },
       },
     },
   },
@@ -777,7 +768,12 @@ require('lazy').setup({
     build = ':TSUpdate',
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'python', 'query', 'typescript', 'vim', 'vimdoc' },
+      ensure_installed = {
+        'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline',
+        'python', 'query', 'vim', 'vimdoc',
+        'javascript', 'typescript', 'tsx', 'jsdoc',
+        'json', 'jsonc', 'yaml', 'toml', 'css', 'regex',
+      },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -833,7 +829,7 @@ require('lazy').setup({
       local lint = require 'lint'
       lint.linters_by_ft = {
         markdown = { 'markdownlint' },
-        python = { 'ruff' },
+        -- python linting is handled by the ruff LSP above
         --   clojure = { "clj-kondo" },
         --   dockerfile = { "hadolint" },
         --   inko = { "inko" },
@@ -867,6 +863,7 @@ require('lazy').setup({
 
   { import = 'custom.plugins' },
 }, {
+  rocks = { enabled = false },
   ui = {
     icons = vim.g.have_nerd_font and {} or {
       cmd = '⌘',
